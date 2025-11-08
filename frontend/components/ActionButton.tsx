@@ -18,10 +18,11 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   color,
   pixels = 6,
   onClick,
-  className,
+  className = "",
 }) => {
   return (
     <button
+      type="button" // important to prevent form submission / GET requests
       className={`${className} ${neobrutalistButton(
         pixels
       )} ${color} px-4 py-4 text-lg rounded-none flex items-center justify-center font-bold`}

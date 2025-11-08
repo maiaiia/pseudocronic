@@ -2,8 +2,11 @@
 
 import { postItStyle, textAreaPostItStyle } from "@/constants";
 import React from "react";
+import { useAppStore } from "@/store/app";
 
 const RegularPostIt = () => {
+  const cppCode = useAppStore((state) => state.cppCode);
+
   return (
     <div className={postItStyle(false)}>
       <div className="flex items-center justify-between mb-4">
@@ -12,6 +15,7 @@ const RegularPostIt = () => {
       <textarea
         className={`${textAreaPostItStyle} p-4`}
         placeholder="Your C++ code will appear here..."
+        value={cppCode}
       />
     </div>
   );

@@ -17,6 +17,9 @@ const PseudocodePostIt: React.FC = () => {
     console.log("Camera clicked!");
   };
 
+  const pseudocode = useAppStore((state) => state.pseudocode);
+  const setPseudocode = useAppStore((state) => state.setPseudocode);
+
   return (
     <div className={postItStyle(true)}>
       <div className="flex items-center justify-between mb-4">
@@ -28,6 +31,8 @@ const PseudocodePostIt: React.FC = () => {
           onScroll={handleScroll}
           className={textAreaPostItStyle}
           placeholder="Write or paste your pseudocode here..."
+          value={pseudocode}
+          onChange={(e) => setPseudocode(e.target.value)}
         />{" "}
         {!isSwapped && (
           <div className="absolute bottom-4 right-4">
