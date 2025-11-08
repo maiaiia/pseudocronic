@@ -18,6 +18,7 @@ class CppToPseudocodeTranspiler:
         i = 0
         while i < len(self.lines):
             line = self.lines[i].strip()
+            line = line.replace('long long)', '')
 
             # Skip empty lines, includes, using namespace
             if not line or line.startswith('#') or 'using namespace' in line:
