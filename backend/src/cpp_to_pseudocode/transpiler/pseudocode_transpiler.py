@@ -194,6 +194,10 @@ class CppToPseudocodeTranspiler:
 
         init, condition, increment = match.groups()
 
+        condition = condition.strip()
+        condition = condition.replace('<', ' ').replace('=', ' ').replace('>', ' ').split()[1]
+
+
         # Parse init: i = 1 or int i = 1
         init = re.sub(r'(int|double|float)\s+', '', init)
         var_match = re.search(r'(\w+)\s*=\s*(.+)', init)
