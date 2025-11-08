@@ -1,0 +1,7 @@
+citeste n
+    s <- 0
+    cat timp n != 0 executa
+        s <- s + n % 10
+        n <- [n / 10]
+    sfarsit_cat_timp
+scrie "Suma este: ", s
