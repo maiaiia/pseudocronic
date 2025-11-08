@@ -2,9 +2,8 @@ import math
 import json
 from typing import Any, Dict, Optional
 
-from backend.compiler.ast_node import ASTNode, ASTNodeType
-from backend.compiler.parser import Parser
-from backend.compiler.lexer import lex
+from backend.src.pseudocode_to_cpp.compiler.parser import Parser
+from backend.src.pseudocode_to_cpp.compiler.lexer import lex
 
 
 def _attribute(node: Any, key: str, default: Any = None) -> Any:

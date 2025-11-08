@@ -1,11 +1,10 @@
-import math
 import json
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 # Use the refactored compiler modules (capitalized filenames)
-from backend.compiler.ast_node import ASTNodeType, ASTNode
-from backend.compiler.parser import Parser
-from backend.compiler.lexer import lex
+from backend.src.pseudocode_to_cpp.compiler.ast_node import ASTNodeType, ASTNode
+from backend.src.pseudocode_to_cpp.compiler.parser import Parser
+from backend.src.pseudocode_to_cpp.compiler.lexer import lex
 
 
 class CppTranspiler:
