@@ -15,12 +15,10 @@ async def correct_pseudocode(request: CodeCorrectionRequest):
     Correct Romanian pseudocode according to pbinfo.ro rules.
 
     - **code**: The pseudocode to correct
-    - **provide_explanation**: Whether to include explanation of corrections
     """
     try:
         result = await corrector.correct_code(
-            code=request.code,
-            provide_explanation=request.provide_explanation
+            code=request.code
         )
         return result
     except Exception as e:
