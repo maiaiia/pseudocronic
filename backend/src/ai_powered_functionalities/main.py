@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.ai_powered_functionalities.api.routes import ocr, pseudocode_correction
+from backend.src.ai_powered_functionalities.api.routes import ocr, pseudocode_correction
 
 app = FastAPI(
     title="Romanian Pseudocode Translator API",

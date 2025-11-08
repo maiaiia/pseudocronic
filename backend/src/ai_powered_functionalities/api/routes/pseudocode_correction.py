@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
 
-from backend.ai_powered_functionalities.correction_pseudocode.corrector import CodeCorrector
-from backend.ai_powered_functionalities.models.requests import CodeCorrectionRequest
-from backend.ai_powered_functionalities.models.responses import CodeCorrectionResponse
+from backend.src.ai_powered_functionalities.correction_pseudocode.corrector import CodeCorrector
+from backend.src.ai_powered_functionalities.models.requests import CodeCorrectionRequest
+from backend.src.ai_powered_functionalities.models.responses import CodeCorrectionResponse
 
 router = APIRouter(prefix="/correction", tags=["Code Correction"])
 

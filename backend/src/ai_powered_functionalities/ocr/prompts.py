@@ -1,4 +1,4 @@
-from backend.ai_powered_functionalities.correction_pseudocode.prompts import PSEUDOCODE_RULES
+from backend.src.ai_powered_functionalities.correction_pseudocode.prompts import PSEUDOCODE_RULES
 
 
 def get_ocr_cleanup_prompt(raw_ocr_text: str) -> list:
