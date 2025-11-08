@@ -288,7 +288,7 @@ class CppTranspiler:
                      "adevarat": "true",
                      "fals": "false"
                  }
-                 return f"{boolean_lut.get(val, 'false')}"
+                 return f"{boolean_lut.get(val.lower(), 'false')}"
              elif inferred == 'string':
                  return f'"{val}"'
              # numeric or var: return as-is
@@ -338,20 +338,26 @@ class CppTranspiler:
 
 if __name__ == '__main__':
     code_sample = """
-        citeste n
-        s <- 0
-        ok <- adevarat
-        pentru i <- 1, n executa
-            s <- s + i
-        sfarsit_pentru
-        ma <- s / n
-        scrie ma
+        daca 1 != 1 SI ADEVARAT atunci
+            scrie "B"
+        sfarsit_daca
+        executa
+            a <- 2
+            a <- 10
+            b <- 20 ^ 1
+            citeste d, e, f
+        cat timp a = 6 SI a = 3
+        
+        cat timp a = 3 executa
+            s <- a + [b / 3]
+        sfarsit_cat_timp
         """
 
     try:
         tokens = list(lex(code_sample))
         parser = Parser(tokens)
         ast = parser.parse_program()
+
         print(json.dumps(ast.to_json(), indent=2))
     except (SyntaxError, ValueError) as e:
         print(f"Eroare: {e}")
