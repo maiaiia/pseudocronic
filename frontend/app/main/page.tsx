@@ -1,24 +1,32 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowRight, Code2, Wrench, Info, PlayCircle } from "lucide-react";
+import { ArrowRight, Code2, Wrench, PlayCircle } from "lucide-react";
+import { useAppStore } from "@/store/app";
 import PseudocodePostIt from "@/components/PseudocodePostIt";
 import RegularPostIt from "@/components/RegularPostIt";
 import ActionButton from "@/components/ActionButton";
-import { useAppStore } from "@/store/app";
 
 const MainPage: React.FC = () => {
-  const { isSwapped, toggleSwap, pseudocodeToCpp, cppToPseudocode } =
-    useAppStore();
+  const {
+    isSwapped,
+    toggleSwap,
+    pseudocodeToCpp,
+    cppToPseudocode,
+    hasErrors,
+    errors,
+    explanation,
+    checkAndFixCode,
+  } = useAppStore();
 
   return (
     <div className="min-h-screen bg-yellow-400">
-      <div className="max-w-7xl mx-auto p-8">
-        <div className="grid grid-cols-1 lg:grid-cols-13 gap-8 mb-8">
+      <div className="max-w-7xl mx-auto p-8 space-y-8">
+        {/* Textareas */}
+        <div className="grid grid-cols-1 lg:grid-cols-13 gap-8">
           {isSwapped ? (
             <>
               <RegularPostIt />
-              <div className="hidden lg:flex flex-col items-center justify-center lg:col-span-1">
+              <div className="hidden lg:flex items-center justify-center lg:col-span-1">
                 <ActionButton
                   icon={
                     <ArrowRight
@@ -38,7 +46,7 @@ const MainPage: React.FC = () => {
           ) : (
             <>
               <PseudocodePostIt />
-              <div className="hidden lg:flex flex-col items-center justify-center lg:col-span-1">
+              <div className="hidden lg:flex items-center justify-center lg:col-span-1">
                 <ActionButton
                   icon={
                     <ArrowRight
@@ -58,7 +66,7 @@ const MainPage: React.FC = () => {
           )}
         </div>
 
-        {/* Action Buttons */}
+        {/* Buttons */}
         <div className="flex flex-wrap justify-center gap-6">
           <ActionButton
             label="TRANSLATE"
@@ -69,19 +77,32 @@ const MainPage: React.FC = () => {
           <ActionButton
             label="FIX MY CODE"
             icon={<Wrench className="h-6 w-6" />}
-            color="bg-green-400"
-          />
-          <ActionButton
-            label="EXPLAIN ISSUES"
-            icon={<Info className="h-6 w-6" />}
-            color="bg-amber-400"
+            color={hasErrors ? "bg-red-500" : "bg-gray-400"}
+            onClick={checkAndFixCode}
           />
           <ActionButton
             label="EXECUTE STEP BY STEP"
             icon={<PlayCircle className="h-6 w-6" />}
-            color="bg-purple-400"
+            color="bg-pink-300"
           />
         </div>
+
+        {/* Error + Explanation cards */}
+        {hasErrors && (
+          <div className="grid gap-4 mt-6">
+            {errors.map((err, i) => (
+              <div
+                key={i}
+                className="bg-red-500 text-black font-semibold shadow-[4px_4px_0px_black] rounded-2xl p-4 border-4 border-black"
+              >
+                ⚠️ {err}
+              </div>
+            ))}
+            <div className="bg-blue-300 text-black shadow-[4px_4px_0px_black] rounded-2xl p-4 border-4 border-black">
+              ℹ️ {explanation}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
