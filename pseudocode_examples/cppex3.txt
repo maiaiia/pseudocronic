@@ -1,0 +1,25 @@
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+int main() {
+    double a, s;
+    int b, d, e, f;
+
+    if (true && 1 != 1) {
+        cout << "B";
+    }
+    do {
+        a = sqrt(pow(2, 2));
+    }
+    while (((a == 6) && (a == 3)));
+    a = 10;
+    b = 20;
+    cin >> d >> e >> f;
+
+    while ((a == 3)) {
+        s = (a + (b / 3));
+    }
+    return 0;
+}

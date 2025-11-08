@@ -7,12 +7,12 @@ class ASTNodeType(Enum):
     VAR_DECL = auto()
     ASSIGNMENT = auto()
     IF = auto()
-    WHILE = auto()         # cat timp ... executa
-    DO_WHILE = auto()      # executa ... cat timp
-    REPEAT_UNTIL = auto()  # repeta ... pana cand
-    FOR = auto()           # pentru
-    READ = auto()          # citeste
-    WRITE = auto()         # scrie
+    WHILE = auto()         # cat timp ... executa / do ... while ()
+    DO_WHILE = auto()      # executa ... cat timp / while
+    REPEAT_UNTIL = auto()  # repeta ... pana cand / do ... while (not ...)
+    FOR = auto()           # pentru / for
+    READ = auto()          # citeste / cin >>
+    WRITE = auto()         # scrie / cout <<
     BIN_OP = auto()        # +, -, *, /, %, AND, OR, <, >, =, etc.
     UNARY_OP = auto()      # NOT, -, [ ] (cast la int)
     LITERAL = auto()       # numere, string-uri
