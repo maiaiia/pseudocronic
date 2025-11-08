@@ -1,6 +1,7 @@
 import sys
 import re
 
+
 class CppToPseudocodeTranspiler:
     def __init__(self, cpp_code):
         self.cpp_code = cpp_code
@@ -10,38 +11,49 @@ class CppToPseudocodeTranspiler:
         self.in_main = False
         self.brace_stack = []
         self.in_do_while = False
+        self.pending_do_while_condition = None
 
     def transpile(self):
         """Main transpilation function"""
-        for line in self.lines:
-            line = line.strip()
+        i = 0
+        while i < len(self.lines):
+            line = self.lines[i].strip()
 
             # Skip empty lines, includes, using namespace
             if not line or line.startswith('#') or 'using namespace' in line:
+                i += 1
                 continue
 
             # Skip comments
             if line.startswith('//'):
+                i += 1
                 continue
 
             # Detect main function
             if 'int main' in line or 'void main' in line:
                 self.in_main = True
+                i += 1
                 continue
 
             # Skip return 0
             if line.startswith('return'):
+                i += 1
                 continue
 
             # Handle closing brace with potential while (for do-while)
-            if '}' in line and 'while' in line:
-                # This is the end of do-while: } while (condition);
-                self.handle_do_while_end(line)
-                continue
+            if line == '}' and i + 1 < len(self.lines):
+                next_line = self.lines[i + 1].strip()
+                if next_line.startswith('while'):
+                    # This is a do-while ending: } while (condition);
+                    condition_line = next_line
+                    self.handle_do_while_end(condition_line)
+                    i += 2  # Skip both lines
+                    continue
 
             # Handle opening brace
             if line == '{':
                 self.brace_stack.append('block')
+                i += 1
                 continue
 
             # Handle closing brace
@@ -58,23 +70,35 @@ class CppToPseudocodeTranspiler:
                         self.indent_level -= 1
                         self.add_line('sfarsit_daca')
                     elif block_type == 'do':
-                        # Don't close here, wait for while
-                        self.in_do_while = True
+                        # This should not happen for proper do-while
+                        self.indent_level -= 1
+                        self.add_line('sfarsit_executa')
+                i += 1
                 continue
 
             # If not in main yet, check for global variables
             if not self.in_main:
                 self.handle_global_declaration(line)
+                i += 1
                 continue
 
             # In main: skip variable declarations without initialization
             if self.is_declaration_only(line):
+                i += 1
+                continue
+
+            # Handle do-while start
+            if line.startswith('do'):
+                self.handle_do_while(line)
+                i += 1
                 continue
 
             # Process the line
             self.process_line(line)
+            i += 1
 
-        return '\n'.join(self.output)
+        out = '\n'.join(self.output)
+        return self.fix_common_issues(out)
 
     def add_line(self, text):
         """Add line with proper indentation"""
@@ -122,14 +146,9 @@ class CppToPseudocodeTranspiler:
             self.handle_for_loop(line)
             return
 
-        # Handle while loop (but not if we just closed a do-while)
+        # Handle while loop
         if line.startswith('while') and not self.in_do_while:
             self.handle_while_loop(line)
-            return
-
-        # Handle do-while
-        if line.startswith('do'):
-            self.handle_do_while(line)
             return
 
         # Handle if statement
@@ -183,11 +202,7 @@ class CppToPseudocodeTranspiler:
         start_val = self.translate_expression(start_val)
 
         # Parse condition: i <= n or i < n
-        cond_match = re.search(r'(\w+)\s*([<>=!]+)\s*(.+)', condition)
-        if not cond_match:
-            return
-        _, op, end_val = cond_match.groups()
-        end_val = self.translate_expression(end_val)
+        condition = self.translate_expression(condition)
 
         # Parse increment: i++ or i += 1
         step = '1'
@@ -200,9 +215,9 @@ class CppToPseudocodeTranspiler:
 
         # Generate pseudocode
         if step == '1':
-            self.add_line(f'pentru {var_name} <- {start_val}, {end_val} executa')
+            self.add_line(f'pentru {var_name} <- {start_val}, {condition} executa')
         else:
-            self.add_line(f'pentru {var_name} <- {start_val}, {end_val}, {step} executa')
+            self.add_line(f'pentru {var_name} <- {start_val}, {condition}, {step} executa')
 
         self.indent_level += 1
         self.brace_stack.append('for')
@@ -222,21 +237,28 @@ class CppToPseudocodeTranspiler:
         self.brace_stack.append('while')
 
     def handle_do_while(self, line):
-        """Handle do-while loop"""
+        """Handle do-while loop start"""
         self.add_line('executa')
         self.indent_level += 1
         self.brace_stack.append('do')
+        self.in_do_while = True
 
     def handle_do_while_end(self, line):
         """Handle } while (condition); for do-while"""
-        # Extract condition from } while (condition);
-        match = re.search(r'while\s*\((.+?)\)', line)
+        # Extract condition from while (condition);
+        match = re.search(r'while\s*\((.+?)\)\s*;', line)
         if match:
             condition = match.group(1)
             condition = self.translate_expression(condition)
 
+            # Close the do-while block
             self.indent_level -= 1
             self.add_line(f'cat timp {condition}')
+
+            # Remove the 'do' from brace stack since we're closing it
+            if self.brace_stack and self.brace_stack[-1] == 'do':
+                self.brace_stack.pop()
+
             self.in_do_while = False
 
     def handle_if_statement(self, line):
@@ -327,40 +349,25 @@ class CppToPseudocodeTranspiler:
         """Remove unnecessary outer parentheses from expressions"""
         expr = expr.strip()
 
-        # Remove multiple layers of outer parentheses
-        while expr.startswith('((') and expr.endswith('))'):
-            # Check if these are truly outer parentheses
-            depth = 0
-            can_remove = True
-            for i, char in enumerate(expr[1:-1], 1):
-                if char == '(':
-                    depth += 1
-                elif char == ')':
-                    depth -= 1
-                    if depth < 0 and i < len(expr) - 1:
-                        can_remove = False
-                        break
+        # Count parentheses balance
+        balance = 0
+        min_balance = 0
 
-            if can_remove and depth == 0:
-                expr = expr[1:-1].strip()
-            else:
-                break
+        for char in expr:
+            if char == '(':
+                balance += 1
+            elif char == ')':
+                balance -= 1
+                min_balance = min(min_balance, balance)
 
-        # Remove single outer parentheses if they're not needed
-        if expr.startswith('(') and expr.endswith(')'):
-            depth = 0
-            can_remove = True
-            for i, char in enumerate(expr[1:-1], 1):
-                if char == '(':
-                    depth += 1
-                elif char == ')':
-                    depth -= 1
-                    if depth < 0:
-                        can_remove = False
-                        break
+        # If parentheses are balanced and the whole expression is wrapped
+        if balance == 0 and expr.startswith('(') and expr.endswith(')') and min_balance == 0:
+            # Check if removing parentheses would change meaning
+            inner = expr[1:-1].strip()
 
-            if can_remove and depth == 0:
-                expr = expr[1:-1].strip()
+            # Don't remove if it contains operators that need grouping
+            if not any(op in inner for op in [' si ', ' sau ', '=', '=/=', '<', '>', '<=', '>=']):
+                return inner
 
         return expr
 
@@ -371,27 +378,13 @@ class CppToPseudocodeTranspiler:
         # Handle type casts: (double)x / y becomes x / y
         expr = re.sub(r'\(\s*(int|double|float)\s*\)', '', expr)
 
-        # Clean unnecessary parentheses
-        expr = self.clean_parentheses(expr)
+        # Clean unnecessary parentheses multiple times
+        old_expr = ""
+        while expr != old_expr:
+            old_expr = expr
+            expr = self.clean_parentheses(expr)
 
-        # Handle integer division: x / y becomes [x / y] if no cast present
-        # Check if this is integer division (no decimals involved)
-        if '/' in expr:
-            # Check if we need integer division brackets
-            # Don't add if already has brackets or if it's a simple division
-            if not expr.startswith('[') and '.' not in expr:
-                # Find division operations and wrap them
-                # Simple heuristic: if it's a standalone division, wrap it
-                if expr.count('/') == 1 and not any(func in expr for func in ['sqrt', 'pow']):
-                    parts = expr.split('/')
-                    if len(parts) == 2:
-                        left = parts[0].strip()
-                        right = parts[1].strip()
-                        # Only wrap if not already in parentheses
-                        if not (left.startswith('(') or right.endswith(')')):
-                            expr = f'[{left} / {right}]'
-
-        # Translate boolean values
+        # Handle boolean values
         expr = re.sub(r'\btrue\b', 'adevarat', expr)
         expr = re.sub(r'\bfalse\b', 'fals', expr)
 
@@ -400,9 +393,23 @@ class CppToPseudocodeTranspiler:
         expr = expr.replace('!=', '=/=')
         expr = expr.replace('&&', ' si ')
         expr = expr.replace('||', ' sau ')
+        expr = expr.replace('<=', '<=')
+        expr = expr.replace('>=', '>=')
 
         # Handle function calls like sqrt, pow
+        expr = re.sub(r'\bsqrt\s*\(\s*(.+?)\s*\)', r'sqrt(\1)', expr)
         expr = re.sub(r'\bpow\s*\(\s*(.+?)\s*,\s*(.+?)\s*\)', r'\1 ^ \2', expr)
+
+        # Handle integer division - only wrap simple divisions without existing brackets
+        if '/' in expr and not expr.startswith('[') and '[' not in expr and ']' not in expr:
+            # Simple case: a / b
+            if expr.count('/') == 1 and not any(char in expr for char in ['(', ')', ' si ', ' sau ']):
+                left, right = expr.split('/')
+                left = left.strip()
+                right = right.strip()
+                # Only wrap if it looks like integer division (no decimal points)
+                if '.' not in left and '.' not in right:
+                    expr = f'[{left} / {right}]'
 
         return expr
 
@@ -413,34 +420,61 @@ class CppToPseudocodeTranspiler:
         value = re.sub(r'\bfalse\b', 'fals', value)
         return value
 
+    def fix_common_issues(self, translation):
+        """Fix common issues in the final translation"""
+        if isinstance(translation, str):
+            lines = translation.split('\n')
+        else:
+            lines = translation
+
+        fixed_lines = []
+
+        for line in lines:
+            # Fix unbalanced parentheses
+            open_count = line.count('(')
+            close_count = line.count(')')
+
+            if open_count > close_count:
+                # Remove extra opening parentheses
+                line = line.replace('(', '', open_count - close_count)
+            elif close_count > open_count:
+                # Remove extra closing parentheses
+                line = line.replace(')', '', close_count - open_count)
+
+            # Fix double spaces
+            line = re.sub(r'  +', ' ', line)
+
+            fixed_lines.append(line)
+
+        return '\n'.join(fixed_lines)
+
+
 def main():
-
-
     cpp_code = """
 #include <iostream>
-#include <cmath>
-
 using namespace std;
 
 int main() {
-    double a, s;
-    int b, d, e, f;
+    double ma;
+    int n, s, i;
+    bool ok;
 
-    if (((1 != 1) && true)) {
-        cout << "B";
+    cin >> n;
+    s = 0;
+    ok = true;
+    for (i = 1; i <= n; i += 2){
+        s = (s + i);
     }
-    do {
-        a = sqrt(pow(2, 2));
-    } while (((a == 6) && (a == 3)));
-    a = 10;
-    b = 20;
-    cin >> d >> e >> f;
-    while ((a == 3)) {
-        s = (a + (b / 3));
-    }
+    
+    ma = ((double)s / n);
+    cout << ma;
+    return 0;
+    
+}
+
     return 0;
 }
-        """
+    """
 
     try:
         transpiler = CppToPseudocodeTranspiler(cpp_code)
@@ -453,6 +487,7 @@ int main() {
         import traceback
         traceback.print_exc()
         sys.exit(1)
+
 
 if __name__ == '__main__':
     main()

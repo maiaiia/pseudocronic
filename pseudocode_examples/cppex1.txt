@@ -9,12 +9,15 @@ int main() {
     cin >> n;
     s = 0;
     ok = true;
-    for (i = 1; i <= n; i++)
-    {
+    for (i = 1; i <= n; i += 2){
         s = (s + i);
     }
-    ma = ((double)s / n);
+
+    ma = (s / n);
     cout << ma;
+    return 0;
+
+}
 
     return 0;
 }
