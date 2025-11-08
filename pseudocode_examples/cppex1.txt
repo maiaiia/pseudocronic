@@ -1,0 +1,20 @@
+#include <iostream>
+using namespace std;
+
+int main() {
+    double ma;
+    int n, s, i;
+    bool ok;
+
+    cin >> n;
+    s = 0;
+    ok = true;
+    for (i = 1; i <= n; i++)
+    {
+        s = (s + i);
+    }
+    ma = ((double)s / n);
+    cout << ma;
+
+    return 0;
+}
