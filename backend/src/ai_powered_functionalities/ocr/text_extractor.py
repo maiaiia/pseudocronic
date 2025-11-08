@@ -1,5 +1,5 @@
-from backend.src.ai_powered_functionalities.utils.ai_client import GeminiClient
-from backend.src.ai_powered_functionalities.models.responses import OCRResponse
+from ..utils.ai_client import GeminiClient
+from ..models.responses import OCRResponse
 
 
 class TextExtractor:

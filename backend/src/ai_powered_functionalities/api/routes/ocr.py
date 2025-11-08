@@ -1,8 +1,8 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 
-from backend.src.ai_powered_functionalities.config import get_settings
-from backend.src.ai_powered_functionalities.models.responses import OCRResponse
-from backend.src.ai_powered_functionalities.ocr.text_extractor import TextExtractor
+from ...config import get_settings
+from ...models.responses import OCRResponse
+from ...ocr.text_extractor import TextExtractor
 
 router = APIRouter(prefix="/ocr", tags=["Image to Text"])
 

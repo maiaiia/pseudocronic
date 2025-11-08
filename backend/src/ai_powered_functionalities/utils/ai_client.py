@@ -1,5 +1,5 @@
 import google.generativeai as genai
-from backend.src.ai_powered_functionalities.config import get_settings
+from ..config import get_settings
 
 
 class GeminiClient:

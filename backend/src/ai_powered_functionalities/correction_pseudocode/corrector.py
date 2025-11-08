@@ -1,7 +1,7 @@
 import json
-from backend.src.ai_powered_functionalities.utils.ai_client import GeminiClient
-from backend.src.ai_powered_functionalities.correction_pseudocode.prompts import get_correction_prompt
-from backend.src.ai_powered_functionalities.models.responses import CodeCorrectionResponse
+from ..utils.ai_client import GeminiClient
+from ..correction_pseudocode.prompts import get_correction_prompt
+from ..models.responses import CodeCorrectionResponse
 
 
 class CodeCorrector:
