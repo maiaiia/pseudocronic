@@ -1,7 +1,6 @@
-from backend.src.pseudocode_to_cpp.compiler.ast_node import ASTNodeType, ASTNode
-from backend.src.pseudocode_to_cpp.compiler.parser import Parser
-from backend.src.pseudocode_to_cpp.compiler.lexer import lex
-from backend.src.pseudocode_to_cpp.transpiler.cpp_transpiler import CppTranspiler
+from .pseudocode_to_cpp.compiler.parser import Parser
+from .pseudocode_to_cpp.compiler.lexer import lex
+from .pseudocode_to_cpp.transpiler.cpp_transpiler import CppTranspiler
 
 
 def pseudocode_to_cpp(pseudocode: str) -> str:

@@ -2,9 +2,9 @@ import json
 from typing import Dict, List, Optional
 
 # Use the refactored compiler modules (capitalized filenames)
-from backend.src.pseudocode_to_cpp.compiler.ast_node import ASTNodeType, ASTNode
-from backend.src.pseudocode_to_cpp.compiler.parser import Parser
-from backend.src.pseudocode_to_cpp.compiler.lexer import lex
+from ..compiler.ast_node import ASTNodeType, ASTNode
+from ..compiler.parser import Parser
+from ..compiler.lexer import lex
 
 
 class CppTranspiler:

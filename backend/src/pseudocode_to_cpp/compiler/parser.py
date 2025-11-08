@@ -1,8 +1,8 @@
 import json
 from typing import Any, Dict, List, Optional
-from backend.src.pseudocode_to_cpp.compiler.ast_node import ASTNodeType, ASTNode, BinOpNode, LiteralNode
+from .ast_node import ASTNodeType, ASTNode, BinOpNode, LiteralNode
 # Presupunem că lexer-ul e în lexer.py și funcționează conform discuției anterioare
-from backend.src.pseudocode_to_cpp.compiler.lexer import lex
+from .lexer import lex
 
 
 class Parser:
