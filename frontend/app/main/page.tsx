@@ -10,6 +10,8 @@ import { useAppStore } from "@/store/app";
 const MainPage: React.FC = () => {
   const { isSwapped, toggleSwap } = useAppStore();
 
+  const { pseudocodeToCpp } = useAppStore();
+
   return (
     <div className="min-h-screen bg-yellow-400">
       <div className="max-w-7xl mx-auto p-8">
@@ -63,6 +65,7 @@ const MainPage: React.FC = () => {
             label="TRANSLATE"
             icon={<Code2 className="h-6 w-6" />}
             color="bg-blue-400"
+            onClick={pseudocodeToCpp}
           />
           <ActionButton
             label="FIX MY CODE"
