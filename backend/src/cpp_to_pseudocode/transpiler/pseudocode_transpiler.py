@@ -18,6 +18,7 @@ class CppToPseudocodeTranspiler:
         i = 0
         while i < len(self.lines):
             line = self.lines[i].strip()
+            line = line.replace('long long)', '')
 
             # Skip empty lines, includes, using namespace
             if not line or line.startswith('#') or 'using namespace' in line:
@@ -192,6 +193,10 @@ class CppToPseudocodeTranspiler:
             return
 
         init, condition, increment = match.groups()
+
+        condition = condition.strip()
+        condition = condition.replace('<', ' ').replace('=', ' ').replace('>', ' ').split()[1]
+
 
         # Parse init: i = 1 or int i = 1
         init = re.sub(r'(int|double|float)\s+', '', init)
