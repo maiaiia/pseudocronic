@@ -8,9 +8,8 @@ import ActionButton from "@/components/ActionButton";
 import { useAppStore } from "@/store/app";
 
 const MainPage: React.FC = () => {
-  const { isSwapped, toggleSwap } = useAppStore();
-
-  const { pseudocodeToCpp } = useAppStore();
+  const { isSwapped, toggleSwap, pseudocodeToCpp, cppToPseudocode } =
+    useAppStore();
 
   return (
     <div className="min-h-screen bg-yellow-400">
@@ -65,7 +64,7 @@ const MainPage: React.FC = () => {
             label="TRANSLATE"
             icon={<Code2 className="h-6 w-6" />}
             color="bg-blue-400"
-            onClick={pseudocodeToCpp}
+            onClick={isSwapped ? cppToPseudocode : pseudocodeToCpp}
           />
           <ActionButton
             label="FIX MY CODE"
