@@ -366,7 +366,7 @@ class CppToPseudocodeTranspiler:
             inner = expr[1:-1].strip()
 
             # Don't remove if it contains operators that need grouping
-            if not any(op in inner for op in [' si ', ' sau ', '=', '=/=', '<', '>', '<=', '>=']):
+            if not any(op in inner for op in [' si ', ' sau ', '=', '!=', '<', '>', '<=', '>=']):
                 return inner
 
         return expr
@@ -390,7 +390,7 @@ class CppToPseudocodeTranspiler:
 
         # Translate operators
         expr = expr.replace('==', '=')
-        expr = expr.replace('!=', '=/=')
+        expr = expr.replace('!=', '!=')
         expr = expr.replace('&&', ' si ')
         expr = expr.replace('||', ' sau ')
         expr = expr.replace('<=', '<=')
