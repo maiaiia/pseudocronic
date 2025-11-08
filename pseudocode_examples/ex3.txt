@@ -1,0 +1,12 @@
+daca 1 != 1 si adevarat atunci
+    scrie "B"
+sfarsit_daca
+executa
+    a <- sqrt(2^2)
+cat timp a = 6 si a = 3
+a <- 10
+b <- 20
+citeste d, e, f
+cat timp a = 3 executa
+    s <- a + [b / 3]
+sfarsit_cat_timp

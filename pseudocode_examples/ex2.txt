@@ -1,0 +1,8 @@
+citeste n
+s <- 0
+ok <- adevarat
+pentru i <- 1, n executa
+    s <- s + i
+sfarsit_pentru
+ma <- s / n
+scrie ma
