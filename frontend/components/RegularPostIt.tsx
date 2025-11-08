@@ -5,7 +5,7 @@ import React from "react";
 import { useAppStore } from "@/store/app";
 
 const RegularPostIt = () => {
-  const cppCode = useAppStore((state) => state.cppCode);
+  const { cppCode, setCppCode } = useAppStore();
 
   return (
     <div className={postItStyle(false)}>
@@ -16,6 +16,7 @@ const RegularPostIt = () => {
         className={`${textAreaPostItStyle} p-4`}
         placeholder="Your C++ code will appear here..."
         value={cppCode}
+        onChange={(e) => setCppCode(e.target.value)}
       />
     </div>
   );
