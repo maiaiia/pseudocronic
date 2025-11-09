@@ -5,16 +5,18 @@ import { notebookStyle, postItStyle, textAreaPostItStyle } from "@/constants";
 import { Camera } from "lucide-react";
 import ActionButton from "@/components/ActionButton";
 import { useAppStore } from "@/store/app";
+import OCRModal from "./ui/OCRModal";
 
 const PseudocodePostIt: React.FC = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [isOcrOpen, setIsOcrOpen] = useState(false);
   const { isSwapped } = useAppStore();
 
   const handleScroll = (e: UIEvent<HTMLTextAreaElement>) =>
     setScrollPosition(e.currentTarget.scrollTop);
 
   const handleCameraClick = () => {
-    console.log("Camera clicked!");
+    setIsOcrOpen(true);
   };
 
   const pseudocode = useAppStore((state) => state.pseudocode);
@@ -45,6 +47,7 @@ const PseudocodePostIt: React.FC = () => {
           </div>
         )}
       </div>
+      <OCRModal isOpen={isOcrOpen} onClose={() => setIsOcrOpen(false)} />;
     </div>
   );
 };

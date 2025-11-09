@@ -16,6 +16,9 @@ interface AppState {
   errors: string[];
   explanation: string;
   checkAndFixCode: () => Promise<void>;
+
+  isOcrLoading: boolean;
+  ocrUploadImage: (file: File) => Promise<void>;
 }
 
 interface CorrectionResponse {
@@ -92,6 +95,28 @@ export const useAppStore = create<AppState>((set, get) => ({
     } catch (err) {
       console.error(err);
       alert("Error checking pseudocode.");
+    }
+  },
+
+  isOcrLoading: false,
+  ocrUploadImage: async (file: File) => {
+    set({ isOcrLoading: true });
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      const response = await fetch("http://localhost:8000/api/v1/ocr", {
+        method: "POST",
+        body: formData,
+      });
+      if (!response.ok) throw new Error("OCR upload failed");
+      const data = await response.json();
+      set({ pseudocode: data.extracted_text });
+      console.log("OCR result:", data);
+    } catch (err) {
+      console.error("OCR error:", err);
+      alert("Failed to extract pseudocode from image");
+    } finally {
+      set({ isOcrLoading: false });
     }
   },
 }));
