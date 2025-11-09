@@ -32,6 +32,7 @@ def cpp_to_pseudocode(request: CppRequest):
 
 @router.post("/sbs")
 def step_by_step_execution(request: StepByStepRequest):
+    print(f"received {request}")
     trace = service.step_by_step_execution(request.pseudocode)
     if not trace:
         raise HTTPException(status_code=500, detail="Internal server error")
