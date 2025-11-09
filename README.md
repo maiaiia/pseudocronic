@@ -4,21 +4,20 @@ AI-Powered Pseudocode Translator
 ## Sintaxa Pseudocod
 
 ### Tipuri de Date
-- BOOL (?)
-- INT
-- FLOAT
-- ARRAY 
-- STRING
+- bool 
+- int
+- float / double
+- string
  
 ### Operatii
 #### Operatii Logice
 - `=` - egalitatea
-- `=\=` - neegalitatea
+- `!=` - neegalitatea
 - `<` - mai mic
 - `<=` - mai mic sau egal
 - `>` - mai mare
 - `>=` - mai mare sau egal
-- `sqrt()` - radacina
+- `sqrt()` - radacina patrata
 
 #### Operatii Aritmetice 
 - `+` - adunare
