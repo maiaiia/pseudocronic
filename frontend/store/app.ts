@@ -47,6 +47,9 @@ interface AppState {
   setCanExecute: (v: boolean) => void;
 
   clearFixInfo: () => void;
+
+  problemStatement: string;
+  setProblemStatement: (text: string) => void;
 }
 
 interface CorrectionResponse {
@@ -260,4 +263,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   setCanExecute: (v) => set({ canExecute: v }),
 
   clearFixInfo: () => set({ hasErrors: false, errors: [], explanation: "" }),
+
+  problemStatement: "",
+  setProblemStatement: (stmt: string) => set({ problemStatement: stmt }),
 }));

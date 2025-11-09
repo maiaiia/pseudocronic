@@ -7,6 +7,7 @@ import RegularPostIt from "@/components/RegularPostIt";
 import ActionButton from "@/components/ActionButton";
 import { useWSStore } from "@/store/ws";
 import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 const MainPage: React.FC = () => {
   const {
@@ -26,6 +27,8 @@ const MainPage: React.FC = () => {
     resetExecution,
     canFix,
     canExecute,
+    problemStatement,
+    setProblemStatement,
   } = useAppStore();
 
   const currentStep = executionSteps[currentStepIndex];
@@ -120,27 +123,33 @@ const MainPage: React.FC = () => {
         </div>
 
         {/* Buttons */}
-        <div className="flex flex-wrap justify-center gap-6">
+        <div className="flex-wrap justify-center gap-6 grid grid-cols-3">
           <ActionButton
             label="TRANSLATE"
             icon={<Code2 className="h-6 w-6" />}
             color="bg-blue-400"
             onClick={isSwapped ? cppToPseudocode : pseudocodeToCpp}
           />
+
           <ActionButton
             label="FIX MY CODE"
             icon={<Wrench className="h-6 w-6" />}
             color={!isSwapped && canFix ? "bg-red-500" : "bg-gray-400"}
             onClick={!isSwapped && canFix ? checkAndFixCode : undefined}
           />
+
           <ActionButton
             label="EXECUTE STEP BY STEP"
             icon={<PlayCircle className="h-6 w-6" />}
             color={!isSwapped && canExecute ? "bg-pink-300" : "bg-gray-400"}
             onClick={!isSwapped && canExecute ? executeStepByStep : undefined}
           />
+
+          {/* Create Room */}
           <ActionButton
-            label="Create Room"
+            label="CREATE ROOM"
+            icon={<ArrowRight className="h-5 w-5" />}
+            color="bg-green-500 hover:bg-green-600"
             onClick={() => {
               const code = Math.random()
                 .toString(36)
@@ -151,14 +160,43 @@ const MainPage: React.FC = () => {
             }}
           />
 
+          {/* Join Room */}
           <ActionButton
-            label="Join Room"
+            label="JOIN ROOM"
+            icon={<ArrowRight className="h-5 w-5 rotate-180" />}
+            color="bg-yellow-400 hover:bg-yellow-500"
             onClick={() => {
               const code = prompt("Enter room code");
               if (code) useWSStore.getState().connectToRoom(code, false);
             }}
           />
+
+          {/* Generate Problem Statement */}
+          <ActionButton
+            label="GEN PROBLEM"
+            icon={<Code2 className="h-5 w-5" />}
+            color="bg-purple-500 hover:bg-purple-600"
+            onClick={async () => {
+              try {
+                const response = await fetch("/api/generate-problem");
+                const data = await response.json();
+                useAppStore.getState().setProblemStatement(data.problem); // add this state in your store
+              } catch (err) {
+                toast.error("Failed to generate problem statement");
+              }
+            }}
+          />
         </div>
+
+        {/* Problem Statement Display */}
+        {useAppStore.getState().problemStatement && (
+          <div className="bg-purple-300 text-black shadow-[4px_4px_0px_black] rounded-2xl p-4 border-4 border-black mt-6">
+            <div className="font-bold mb-2">
+              Problem Statement (AI Generated):
+            </div>
+            <div>{useAppStore.getState().problemStatement}</div>
+          </div>
+        )}
 
         {/* Error + Explanation cards */}
         {hasErrors && (
