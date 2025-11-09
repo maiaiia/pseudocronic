@@ -1,8 +1,9 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Request
 
 from ...config import get_settings
 from ...models.responses import OCRResponse
 from ...ocr.text_extractor import TextExtractor
+from ....rate_limiter import rate_limit
 
 router = APIRouter(prefix="/ocr", tags=["Image to Text"])
 
@@ -11,7 +12,9 @@ settings = get_settings()
 
 
 @router.post("/", response_model=OCRResponse)
+@rate_limit(max_calls=3, window_hours=1)
 async def extract_pseudocode_from_image(
+        request: Request,
         image: UploadFile = File(..., description="Image containing pseudocode")
 ):
     """

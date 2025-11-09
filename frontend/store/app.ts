@@ -26,6 +26,12 @@ interface CorrectionResponse {
   has_errors: boolean;
   errors_found: string[];
   explanation: string;
+  remaining_calls?: number;
+}
+interface OCRResponse {
+  extracted_text: string;
+  remaining_calls?: number;
+
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -80,6 +86,9 @@ export const useAppStore = create<AppState>((set, get) => ({
         { code: pseudocode }
       );
       const data = res.data;
+      if (data.remaining_calls !== undefined){
+        alert(`Fixes remaining this hour: ${data.remaining_calls}`);
+      }
       if (data.has_errors) {
         set({
           hasErrors: true,
@@ -94,7 +103,13 @@ export const useAppStore = create<AppState>((set, get) => ({
       }
     } catch (err) {
       console.error(err);
-      alert("Error checking pseudocode.");
+      // @ts-ignore
+      if (err.response?.status === 429) {
+        // @ts-ignore
+        alert(err.response.data.detail)
+      } else {
+        alert("Error checking pseudocode.");
+      }
     }
   },
 
@@ -108,9 +123,21 @@ export const useAppStore = create<AppState>((set, get) => ({
         method: "POST",
         body: formData,
       });
+
+      if (response.status === 429) {
+        const error = await response.json();
+        alert(error.detail);
+        return;
+      }
+
       if (!response.ok) throw new Error("OCR upload failed");
       const data = await response.json();
       set({ pseudocode: data.extracted_text });
+
+      if (data.remaining_calls !== undefined) {
+        alert(`Image uploaded successfully!\nUploads remaining this hour: ${data.remaining_calls}`);
+      }
+
       console.log("OCR result:", data);
     } catch (err) {
       console.error("OCR error:", err);

@@ -6,8 +6,10 @@ class CodeCorrectionResponse(BaseModel):
     has_errors: bool
     errors_found: Optional[List[str]] = None
     explanation: Optional[str] = None
+    remaining_calls: Optional[int] = None
 
 class OCRResponse(BaseModel):
     extracted_text: str
     confidence: Optional[str] = None
     preprocessing_applied: List[str]
+    remaining_calls: Optional[int] = None
