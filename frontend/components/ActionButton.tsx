@@ -5,8 +5,8 @@ import { neobrutalistButton } from "@/constants";
 
 interface ActionButtonProps {
   label?: string;
-  icon: ReactNode;
-  color: string;
+  icon?: ReactNode;
+  color?: string;
   pixels?: number;
   onClick?: () => void;
   className?: string;

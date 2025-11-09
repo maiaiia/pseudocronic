@@ -1,16 +1,31 @@
 "use client";
 
-import { useState, UIEvent } from "react";
+import { useState, UIEvent, useEffect } from "react";
 import { notebookStyle, postItStyle, textAreaPostItStyle } from "@/constants";
 import { Camera } from "lucide-react";
 import ActionButton from "@/components/ActionButton";
 import { useAppStore } from "@/store/app";
 import OCRModal from "./ui/OCRModal";
+import { useWSStore } from "@/store/ws";
 
 const PseudocodePostIt: React.FC = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isOcrOpen, setIsOcrOpen] = useState(false);
   const { isSwapped } = useAppStore();
+  const { sendUpdate, lastMessage, isOwner } = useWSStore();
+
+  const pseudocode = useAppStore((state) => state.pseudocode);
+  const setPseudocode = useAppStore((state) => state.setPseudocode);
+
+  useEffect(() => {
+    if (isOwner) sendUpdate({ pseudocode });
+  }, [pseudocode]);
+
+  useEffect(() => {
+    if (!isOwner && lastMessage?.pseudocode) {
+      setPseudocode(lastMessage.pseudocode);
+    }
+  }, [lastMessage]);
 
   const handleScroll = (e: UIEvent<HTMLTextAreaElement>) =>
     setScrollPosition(e.currentTarget.scrollTop);
@@ -18,9 +33,6 @@ const PseudocodePostIt: React.FC = () => {
   const handleCameraClick = () => {
     setIsOcrOpen(true);
   };
-
-  const pseudocode = useAppStore((state) => state.pseudocode);
-  const setPseudocode = useAppStore((state) => state.setPseudocode);
 
   return (
     <div className={postItStyle(true)}>

@@ -5,6 +5,8 @@ import { useAppStore } from "@/store/app";
 import PseudocodePostIt from "@/components/PseudocodePostIt";
 import RegularPostIt from "@/components/RegularPostIt";
 import ActionButton from "@/components/ActionButton";
+import { useWSStore } from "@/store/ws";
+import { useEffect } from "react";
 
 const MainPage: React.FC = () => {
   const {
@@ -25,7 +27,9 @@ const MainPage: React.FC = () => {
     canFix,
     canExecute,
   } = useAppStore();
+
   const currentStep = executionSteps[currentStepIndex];
+
   return (
     <div className="min-h-screen bg-yellow-400">
       <div className="max-w-7xl mx-auto p-8 space-y-8">
@@ -93,6 +97,25 @@ const MainPage: React.FC = () => {
             icon={<PlayCircle className="h-6 w-6" />}
             color={!isSwapped && canExecute ? "bg-pink-300" : "bg-gray-400"}
             onClick={!isSwapped && canExecute ? executeStepByStep : undefined}
+          />
+          <ActionButton
+            label="Create Room"
+            onClick={() => {
+              const code = Math.random()
+                .toString(36)
+                .substring(2, 8)
+                .toUpperCase();
+              useWSStore.getState().connectToRoom(code, true);
+              alert(`Room created! Code: ${code}`);
+            }}
+          />
+
+          <ActionButton
+            label="Join Room"
+            onClick={() => {
+              const code = prompt("Enter room code");
+              if (code) useWSStore.getState().connectToRoom(code, false);
+            }}
           />
         </div>
 
