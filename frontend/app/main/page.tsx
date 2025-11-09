@@ -83,14 +83,15 @@ const MainPage: React.FC = () => {
           <ActionButton
             label="FIX MY CODE"
             icon={<Wrench className="h-6 w-6" />}
-            color="bg-red-500"
-            onClick={checkAndFixCode}
+            color={isSwapped ? "bg-gray-400" : "bg-red-500"}
+            onClick={isSwapped ? undefined : checkAndFixCode}
+
           />
           <ActionButton
             label="EXECUTE STEP BY STEP"
             icon={<PlayCircle className="h-6 w-6" />}
-            color="bg-pink-300"
-            onClick={executeStepByStep}
+            color={isSwapped ? "bg-gray-400" : "bg-pink-300"}
+            onClick={isSwapped ? undefined : executeStepByStep}
           />
         </div>
 
