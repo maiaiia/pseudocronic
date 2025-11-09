@@ -30,8 +30,7 @@ exemplu 4:
 citeste x\ncat timp x > 5 executa\n    x <- x - 1\n    daca x = 7 atunci\n        scrie \"Sapte\"\n    sfarsit_daca\nsfarsit_cat_timp
 exemplu 5:
 repeta\n    i <- i + 1\n    scrie i\npana cand i >= 10
-exemplu 6:
-citeste s\n p <- 0\n scrie s, ' ', p
+
 
 Transforma ; in backslash n
 Returnează codul curat, gata de utilizare.
