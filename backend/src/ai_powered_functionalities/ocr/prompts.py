@@ -9,7 +9,7 @@ def get_ocr_cleanup_prompt(raw_ocr_text: str) -> list:
 Sarcina ta:
 1. Curăță textul OCR de erori comune (caractere greșite, spații în plus)
 2. Formatează codul conform regulilor pseudocodului românesc
-3. Corectează simbolurile speciale (<-, ≠, ≤, ≥)
+3. Corectează simbolurile speciale (<-, !=, <=, >=)
 4. Păstrează structura și indentarea
 5. NU modifica logica algoritmului, doar curăță textul
 

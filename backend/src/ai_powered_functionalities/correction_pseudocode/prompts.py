@@ -31,7 +31,7 @@ STRUCTURI DE CONTROL:
 
 OPERATORI:
 - Atribuire: <-
-- Relational: =, ≠, <, ≤, >, ≥
+- Relational: =, !=, <, <=, >, >=
 - Aritmetici: +, -, *, /, %, [a/b] pentru partea întreagă
 - Logici: not, si, sau
 

@@ -15,7 +15,7 @@ Reguli:
 1. Returnează DOAR codul pseudocod, fără explicații
 2. Păstrează formatarea și structura exactă
 3. Corectează eventualele erori de recunoaștere
-4. Asigură-te că simbolurile speciale sunt corecte: <-, ≠, ≤, ≥; sageata fa-o ca semnul mai mic < si minus -; asa: <-
+4. Asigură-te că simbolurile speciale sunt corecte: <-, !=, <=, >=; sageata fa-o ca semnul mai mic < si minus -; asa: <-
 5. Nu păstra structurile: ┌, │, └ pentru blocuri de cod
 
 Uite niste exemple pertinente de cum ar trebui sa arate codul extras:
@@ -43,7 +43,7 @@ Returnează codul curat, gata de utilizare.
         )
 
         return OCRResponse(
-            extracted_text=extracted_text.strip(),
+            extracted_text=extracted_text.strip().replace("```",""),
             confidence="high",
             preprocessing_applied=["Gemini Vision extraction"]
         )
