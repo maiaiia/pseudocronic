@@ -28,11 +28,13 @@ manager = ConnectionManager()
 
 @router.websocket("/ws/{room_id}")
 async def websocket_endpoint(websocket: WebSocket, room_id: str):
+    print(f"[WS] Client connecting to room {room_id}")
     await manager.connect(room_id, websocket)
     try:
         while True:
             data = await websocket.receive_json()
-            # Only broadcast if user is owner
+            print(f"[WS] Received from {room_id}: {data}")
             await manager.broadcast(room_id, data)
     except WebSocketDisconnect:
         manager.disconnect(room_id, websocket)
+        print(f"[WS] Client disconnected from room {room_id}")

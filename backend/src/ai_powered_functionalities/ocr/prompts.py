@@ -14,6 +14,7 @@ Sarcina ta:
 5. NU modifica logica algoritmului, doar curăță textul
 
 Returnează DOAR codul pseudocod curat, fără explicații suplimentare. 
+
 """
 
     user_message = f"Curăță acest text OCR:\n\n{raw_ocr_text}"

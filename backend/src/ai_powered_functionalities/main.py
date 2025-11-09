@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.src.ai_powered_functionalities.api.routes import ocr, pseudocode_correction
+from backend.src.ai_powered_functionalities.api.routes import ocr, pseudocode_correction, generate_problem_statement
 
 app = FastAPI(
     title="Romanian Pseudocode Translator API",
@@ -20,6 +20,8 @@ app.add_middleware(
 # Include routers
 app.include_router(pseudocode_correction.router, prefix="/api/v1")
 app.include_router(ocr.router, prefix="/api/v1")
+
+app.include_router(generate_problem_statement.router, prefix="/api/v1")
 
 @app.get("/")
 async def root():

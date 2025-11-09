@@ -31,6 +31,7 @@ citeste x\ncat timp x > 5 executa\n    x <- x - 1\n    daca x = 7 atunci\n      
 exemplu 5:
 repeta\n    i <- i + 1\n    scrie i\npana cand i >= 10
 
+
 Transforma ; in backslash n
 Returnează codul curat, gata de utilizare.
 """

@@ -256,6 +256,9 @@ sfarsit_pentru
     "explanation": "Buclele imbricate necesită fiecare propria etichetă de închidere."
 }
 
+IMPORTANT:
+Explicatiile de la final vreau sa fie scurte (in total sub 200 de caractere) si vreau sa fie sub acest format daca se poate:
+error/ correction 1: explicatie \n error/correction 2: explicatie \n etc.
 """
 
     user_message = f"Corectează următorul pseudocod:\n\n{code}"
