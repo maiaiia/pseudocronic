@@ -8,6 +8,7 @@ import ActionButton from "@/components/ActionButton";
 import { useWSStore } from "@/store/ws";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 const MainPage: React.FC = () => {
   const {
@@ -176,25 +177,65 @@ const MainPage: React.FC = () => {
             label="GEN PROBLEM"
             icon={<Code2 className="h-5 w-5" />}
             color="bg-purple-500 hover:bg-purple-600"
-            onClick={async () => {
-              try {
-                const response = await fetch("/api/generate-problem");
-                const data = await response.json();
-                useAppStore.getState().setProblemStatement(data.problem); // add this state in your store
-              } catch (err) {
-                toast.error("Failed to generate problem statement");
-              }
-            }}
+            onClick={() => useAppStore.getState().generateProblemStatement()}
           />
         </div>
 
         {/* Problem Statement Display */}
-        {useAppStore.getState().problemStatement && (
-          <div className="bg-purple-300 text-black shadow-[4px_4px_0px_black] rounded-2xl p-4 border-4 border-black mt-6">
-            <div className="font-bold mb-2">
-              Problem Statement (AI Generated):
+        {/* Problem Statement Display */}
+        {problemStatement && (
+          <div className="relative bg-purple-300 text-black shadow-[4px_4px_0px_black] rounded-2xl p-4 border-4 border-black mt-6 max-w-3xl mx-auto">
+            {/* Close button */}
+            <button
+              onClick={() => useAppStore.getState().setProblemStatement(null)}
+              className="absolute -top-6 right-0 bg-red-400 border-2 border-black shadow-[2px_2px_0px_black] rounded-lg px-3 py-1 font-bold hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
+            >
+              ✕
+            </button>
+
+            <div className="font-bold text-xl mb-2">
+              Problem Statement (AI Generated)
             </div>
-            <div>{useAppStore.getState().problemStatement}</div>
+
+            <div className="mb-2">
+              <span className="font-bold">Enunț:</span>
+              <div className="ml-4">{problemStatement.enunt}</div>
+            </div>
+
+            <div className="mb-2">
+              <span className="font-bold">Date de intrare:</span>
+              <div className="ml-4">{problemStatement.date_intrare}</div>
+            </div>
+
+            <div className="mb-2">
+              <span className="font-bold">Date de ieșire:</span>
+              <div className="ml-4">{problemStatement.date_iesire}</div>
+            </div>
+
+            {problemStatement.exemplu_intrare && (
+              <div className="mb-2">
+                <span className="font-bold">Exemplu intrare:</span>
+                <pre className="ml-4 bg-black text-green-400 p-2 rounded">
+                  {problemStatement.exemplu_intrare}
+                </pre>
+              </div>
+            )}
+
+            {problemStatement.exemplu_iesire && (
+              <div className="mb-2">
+                <span className="font-bold">Exemplu ieșire:</span>
+                <pre className="ml-4 bg-black text-green-400 p-2 rounded">
+                  {problemStatement.exemplu_iesire}
+                </pre>
+              </div>
+            )}
+
+            {problemStatement.nivel_dificultate && (
+              <div>
+                <span className="font-bold">Nivel dificultate:</span>{" "}
+                {problemStatement.nivel_dificultate}
+              </div>
+            )}
           </div>
         )}
 

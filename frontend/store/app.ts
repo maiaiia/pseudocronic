@@ -13,6 +13,15 @@ interface ExecutionStep {
   output: string;
 }
 
+interface ProblemStatement {
+  enunt: string;
+  date_intrare: string;
+  date_iesire: string;
+  exemplu_intrare?: string;
+  exemplu_iesire?: string;
+  nivel_dificultate?: string;
+}
+
 interface AppState {
   pseudocode: string;
   cppCode: string;
@@ -48,8 +57,9 @@ interface AppState {
 
   clearFixInfo: () => void;
 
-  problemStatement: string;
-  setProblemStatement: (text: string) => void;
+  problemStatement: ProblemStatement | null;
+  setProblemStatement: (stmt: ProblemStatement | null) => void;
+  generateProblemStatement: () => Promise<void>;
 }
 
 interface CorrectionResponse {
@@ -264,6 +274,25 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   clearFixInfo: () => set({ hasErrors: false, errors: [], explanation: "" }),
 
-  problemStatement: "",
-  setProblemStatement: (stmt: string) => set({ problemStatement: stmt }),
+  problemStatement: null,
+  setProblemStatement: (stmt) => set({ problemStatement: stmt }),
+
+  generateProblemStatement: async () => {
+    set({ canFix: false, canExecute: false });
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/v1/generate-problems"
+      );
+
+      if (response.status === 200 && response.data) {
+        set({ problemStatement: response.data });
+        toast.success("Problem statement generated!");
+      } else {
+        toast.error("Failed to generate problem statement");
+      }
+    } catch (err: any) {
+      console.error("Generate problem error:", err);
+      toast.error("Failed to generate problem statement");
+    }
+  },
 }));
