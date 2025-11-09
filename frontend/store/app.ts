@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 interface ExecutionStep {
   step: number;
@@ -30,7 +31,6 @@ interface AppState {
   isOcrLoading: boolean;
   ocrUploadImage: (file: File) => Promise<void>;
 
-  // Step-by-step execution
   executionSteps: ExecutionStep[];
   currentStepIndex: number;
   isExecuting: boolean;
@@ -39,6 +39,13 @@ interface AppState {
   nextStep: () => void;
   prevStep: () => void;
   resetExecution: () => void;
+
+  canFix: boolean;
+  canExecute: boolean;
+  setCanFix: (v: boolean) => void;
+  setCanExecute: (v: boolean) => void;
+
+  clearFixInfo: () => void;
 }
 
 interface CorrectionResponse {
@@ -55,7 +62,7 @@ interface OCRResponse {
 }
 
 interface StepByStepResponse {
-  json_execution: string;
+  json_execution: string; // JSON string from backend
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -70,13 +77,19 @@ export const useAppStore = create<AppState>((set, get) => ({
       const response = await axios.post("http://localhost:8000/ptc", {
         pseudocode,
       });
-      set({ cppCode: response.data.cpp_code });
+      set({
+        cppCode: response.data.cpp_code,
+        canExecute: true,
+        canFix: true,
+        hasErrors: false,
+      });
     } catch (error: any) {
-      set({ hasErrors: true });
-      console.error(error);
-      alert(
-        "There is a mistake in the pseudocode. Please check it and try again."
-      );
+      toast.error("You pseudocode has errors");
+      set({
+        hasErrors: true,
+        canFix: true,
+        canExecute: false,
+      });
     }
   },
 
@@ -89,7 +102,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       set({ pseudocode: response.data.pseudocode });
     } catch (error: any) {
       console.error(error);
-      alert(
+      toast.error(
         "There is a mistake in the cpp code. Please check it and try again."
       );
     }
@@ -104,35 +117,41 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   checkAndFixCode: async () => {
     const { pseudocode } = get();
+    set({ canFix: false });
     try {
       const res = await axios.post<CorrectionResponse>(
         "http://localhost:8000/api/v1/correction",
-        { code: pseudocode }
+        {
+          code: pseudocode,
+        }
       );
       const data = res.data;
+
       if (data.remaining_calls !== undefined) {
-        alert(`Fixes remaining this hour: ${data.remaining_calls}`);
+        toast.success(`Fixes remaining this hour: ${data.remaining_calls}`, {
+          icon: "⚠️",
+        });
       }
+
       if (data.has_errors) {
         set({
           hasErrors: true,
           pseudocode: data.corrected_code,
           errors: data.errors_found,
           explanation: data.explanation,
+          canFix: false,
         });
-        alert("Errors found in pseudocode.");
+        toast.error("Errors found in pseudocode.");
       } else {
         set({ hasErrors: false });
-        alert("No syntax errors found.");
+        toast.success("No syntax errors found.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      // @ts-ignore
       if (err.response?.status === 429) {
-        // @ts-ignore
-        alert(err.response.data.detail);
+        toast.error(err.response.data.detail);
       } else {
-        alert("Error checking pseudocode.");
+        toast.error("Error checking pseudocode.");
       }
     }
   },
@@ -150,56 +169,51 @@ export const useAppStore = create<AppState>((set, get) => ({
 
       if (response.status === 429) {
         const error = await response.json();
-        alert(error.detail);
+        toast.error(error.detail);
         return;
       }
 
       if (!response.ok) throw new Error("OCR upload failed");
-      const data = await response.json();
+      const data: OCRResponse = await response.json();
       set({ pseudocode: data.extracted_text });
 
       if (data.remaining_calls !== undefined) {
-        alert(
+        toast.success(
           `Image uploaded successfully!\nUploads remaining this hour: ${data.remaining_calls}`
         );
       }
-
-      console.log("OCR result:", data);
     } catch (err) {
       console.error("OCR error:", err);
-      alert("Failed to extract pseudocode from image");
+      toast.error("Failed to extract pseudocode from image");
     } finally {
       set({ isOcrLoading: false });
     }
   },
 
-  // Step-by-step execution
   executionSteps: [],
   currentStepIndex: 0,
   isExecuting: false,
 
   executeStepByStep: async () => {
     const { pseudocode } = get();
-
     if (!pseudocode.trim()) {
-      alert("Please enter some pseudocode first!");
+      toast.error("Please enter some pseudocode first!", { icon: "⚠️" });
       return;
     }
 
-    set({ isExecuting: true });
+    set({ isExecuting: true, canExecute: false });
 
     try {
-      console.log("Sending pseudocode:", pseudocode);
-
       const response = await axios.post<StepByStepResponse>(
         "http://localhost:8000/sbs",
         { pseudocode }
       );
 
-      console.log("Response received:", response.data);
-
-      const steps: ExecutionStep[] = response.data.json_execution;
-      console.log("Parsed steps:", steps);
+      // Parse the JSON string
+      const steps: ExecutionStep[] =
+        typeof response.data.json_execution === "string"
+          ? JSON.parse(response.data.json_execution)
+          : response.data.json_execution;
 
       set({
         executionSteps: steps,
@@ -208,11 +222,9 @@ export const useAppStore = create<AppState>((set, get) => ({
       });
     } catch (error: any) {
       console.error("Step-by-step execution error:", error);
-      console.error("Error response:", error.response?.data);
-      console.error("Error status:", error.response?.status);
-
-      const errorMsg = error.response?.data?.detail || error.message || "Unknown error";
-      alert(`Error executing step-by-step:\n${errorMsg}\n\nCheck console for details.`);
+      const errorMsg =
+        error.response?.data?.detail || error.message || "Unknown error";
+      toast.error(`Error executing step-by-step:\n${errorMsg}`);
       set({ isExecuting: false });
     }
   },
@@ -233,4 +245,11 @@ export const useAppStore = create<AppState>((set, get) => ({
     })),
 
   resetExecution: () => set({ executionSteps: [], currentStepIndex: 0 }),
+
+  canFix: false,
+  canExecute: false,
+  setCanFix: (v) => set({ canFix: v }),
+  setCanExecute: (v) => set({ canExecute: v }),
+
+  clearFixInfo: () => set({ hasErrors: false, errors: [], explanation: "" }),
 }));

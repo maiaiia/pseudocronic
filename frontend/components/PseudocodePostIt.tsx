@@ -47,7 +47,7 @@ const PseudocodePostIt: React.FC = () => {
           </div>
         )}
       </div>
-      <OCRModal isOpen={isOcrOpen} onClose={() => setIsOcrOpen(false)} />;
+      <OCRModal isOpen={isOcrOpen} onClose={() => setIsOcrOpen(false)} />
     </div>
   );
 };

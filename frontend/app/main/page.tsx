@@ -22,6 +22,8 @@ const MainPage: React.FC = () => {
     nextStep,
     prevStep,
     resetExecution,
+    canFix,
+    canExecute,
   } = useAppStore();
   const currentStep = executionSteps[currentStepIndex];
   return (
@@ -83,21 +85,26 @@ const MainPage: React.FC = () => {
           <ActionButton
             label="FIX MY CODE"
             icon={<Wrench className="h-6 w-6" />}
-            color={isSwapped ? "bg-gray-400" : "bg-red-500"}
-            onClick={isSwapped ? undefined : checkAndFixCode}
-
+            color={!isSwapped && canFix ? "bg-red-500" : "bg-gray-400"}
+            onClick={!isSwapped && canFix ? checkAndFixCode : undefined}
           />
           <ActionButton
             label="EXECUTE STEP BY STEP"
             icon={<PlayCircle className="h-6 w-6" />}
-            color={isSwapped ? "bg-gray-400" : "bg-pink-300"}
-            onClick={isSwapped ? undefined : executeStepByStep}
+            color={!isSwapped && canExecute ? "bg-pink-300" : "bg-gray-400"}
+            onClick={!isSwapped && canExecute ? executeStepByStep : undefined}
           />
         </div>
 
         {/* Error + Explanation cards */}
         {hasErrors && (
-          <div className="grid gap-4 mt-6">
+          <div className="grid gap-4 mt-6 relative">
+            <button
+              onClick={useAppStore.getState().clearFixInfo}
+              className="absolute -top-6 right-0 bg-red-400 border-2 border-black shadow-[2px_2px_0px_black] rounded-lg px-3 py-1 font-bold hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
+            >
+              ✕
+            </button>
             {errors.map((err, i) => (
               <div
                 key={i}
@@ -155,7 +162,8 @@ const MainPage: React.FC = () => {
               {currentStep.description}
               {currentStep.value && (
                 <div className="mt-2">
-                  <span className="font-bold">Valoare:</span> {currentStep.value}
+                  <span className="font-bold">Valoare:</span>{" "}
+                  {currentStep.value}
                 </div>
               )}
             </div>
@@ -166,7 +174,10 @@ const MainPage: React.FC = () => {
                 <div className="font-bold mb-2">Variabile:</div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                   {Object.entries(currentStep.variables).map(([key, value]) => (
-                    <div key={key} className="bg-white border-2 border-black rounded-lg p-2 font-mono">
+                    <div
+                      key={key}
+                      className="bg-white border-2 border-black rounded-lg p-2 font-mono"
+                    >
                       <span className="font-bold">{key}:</span> {String(value)}
                     </div>
                   ))}
