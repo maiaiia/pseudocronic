@@ -17,16 +17,6 @@ const PseudocodePostIt: React.FC = () => {
   const pseudocode = useAppStore((state) => state.pseudocode);
   const setPseudocode = useAppStore((state) => state.setPseudocode);
 
-  useEffect(() => {
-    if (isOwner) sendUpdate({ pseudocode });
-  }, [pseudocode]);
-
-  useEffect(() => {
-    if (!isOwner && lastMessage?.pseudocode) {
-      setPseudocode(lastMessage.pseudocode);
-    }
-  }, [lastMessage]);
-
   const handleScroll = (e: UIEvent<HTMLTextAreaElement>) =>
     setScrollPosition(e.currentTarget.scrollTop);
 

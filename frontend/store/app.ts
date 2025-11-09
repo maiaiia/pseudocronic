@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useWSStore } from "./ws";
 
 interface ExecutionStep {
   step: number;
@@ -204,12 +205,13 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ isExecuting: true, canExecute: false });
 
     try {
+      console.log("Sending pseudocode");
       const response = await axios.post<StepByStepResponse>(
         "http://localhost:8000/sbs",
         { pseudocode }
       );
+      console.log("Response received");
 
-      // Parse the JSON string
       const steps: ExecutionStep[] =
         typeof response.data.json_execution === "string"
           ? JSON.parse(response.data.json_execution)
@@ -220,6 +222,12 @@ export const useAppStore = create<AppState>((set, get) => ({
         currentStepIndex: 0,
         isExecuting: false,
       });
+
+      // Broadcast steps to spectators
+      const wsStore = useWSStore.getState();
+      if (wsStore.isOwner) {
+        wsStore.sendUpdate({ executionSteps: steps, currentStepIndex: 0 });
+      }
     } catch (error: any) {
       console.error("Step-by-step execution error:", error);
       const errorMsg =

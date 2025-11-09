@@ -30,6 +30,43 @@ const MainPage: React.FC = () => {
 
   const currentStep = executionSteps[currentStepIndex];
 
+  type AppStateSnapshot = {
+    pseudocode: string;
+    cppCode: string;
+    hasErrors: boolean;
+    errors: string[];
+    explanation: string;
+    isSwapped: boolean;
+    executionSteps: any[];
+    currentStepIndex: number;
+  };
+
+  useEffect(() => {
+    const unsub = useAppStore.subscribe((state) => {
+      const wsStore = useWSStore.getState();
+
+      // Build the snapshot you want to send
+      const snapshot: Partial<AppStateSnapshot> = {
+        pseudocode: state.pseudocode,
+        cppCode: state.cppCode,
+        hasErrors: state.hasErrors,
+        errors: state.errors,
+        explanation: state.explanation,
+        isSwapped: state.isSwapped,
+        executionSteps: state.executionSteps,
+        currentStepIndex: state.currentStepIndex,
+      };
+
+      console.log("Sending state update via WS:", snapshot);
+
+      if (wsStore.isOwner) {
+        wsStore.sendUpdate(snapshot);
+      }
+    });
+
+    return unsub;
+  }, []);
+
   return (
     <div className="min-h-screen bg-yellow-400">
       <div className="max-w-7xl mx-auto p-8 space-y-8">
