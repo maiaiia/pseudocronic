@@ -96,7 +96,7 @@ export const useAppStore = create<AppState>((set, get) => ({
           errors: data.errors_found,
           explanation: data.explanation,
         });
-        alert("Errors found in pseudocode. Press Fix My Code to view details.");
+        alert("Errors found in pseudocode.");
       } else {
         set({ hasErrors: false });
         alert("No syntax errors found.");

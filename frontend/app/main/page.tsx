@@ -77,7 +77,7 @@ const MainPage: React.FC = () => {
           <ActionButton
             label="FIX MY CODE"
             icon={<Wrench className="h-6 w-6" />}
-            color={hasErrors ? "bg-red-500" : "bg-gray-400"}
+            color="bg-red-500"
             onClick={checkAndFixCode}
           />
           <ActionButton
