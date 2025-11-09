@@ -22,6 +22,8 @@ Cerințe de calitate:
 IMPORTANT: Returnează răspunsul STRICT în format JSON, fără niciun text suplimentar înainte sau după.
 Nu include ```json sau alte delimitatori.
 
+IMPORTANT: Nu genera probleme cu vectori/siruri si matrici
+
 Formatul JSON trebuie să fie exact așa:
 {{
     "enunt": "Descrierea detaliată a problemei",
