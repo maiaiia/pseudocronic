@@ -69,6 +69,10 @@ const MainPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-yellow-400">
+      <div className="flex flex-col justify-center items-center text-stone-800 font-extrabold text-7xl drop-shadow-lg py-5 outline-text">
+        PSEUDOCRONIC
+      </div>
+
       <div className="max-w-7xl mx-auto p-8 space-y-8">
         {/* Textareas */}
         <div className="grid grid-cols-1 lg:grid-cols-13 gap-8">
