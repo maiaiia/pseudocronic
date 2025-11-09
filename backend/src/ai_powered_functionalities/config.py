@@ -10,9 +10,7 @@ class Settings(BaseSettings):
     ALLOWED_IMAGE_FORMATS: list = ["jpg", "jpeg", "png", "bmp"]
 
     class Config:
-
-        env_file = r"C:\Users\Violeta\PycharmProjects\pseudocronic\backend\.env"
-        env_file_encoding = 'utf-8'
+        env_file=".env"
 
 @lru_cache()
 def get_settings():
