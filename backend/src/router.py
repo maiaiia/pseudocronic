@@ -12,6 +12,8 @@ class PseudocodeRequest(BaseModel):
 class CppRequest(BaseModel):
     cpp_code: str
 
+class StepByStepRequest(BaseModel):
+    pseudocode: str
 
 @router.post("/ptc")
 def pseudocode_to_cpp(request: PseudocodeRequest):
@@ -27,3 +29,10 @@ def cpp_to_pseudocode(request: CppRequest):
     if not pseudocode:
         raise HTTPException(status_code=500, detail="Internal server error")
     return {"pseudocode": pseudocode}
+
+@router.post("/sbs")
+def step_by_step_execution(request: StepByStepRequest):
+    trace = service.step_by_step_execution(request.pseudocode)
+    if not trace:
+        raise HTTPException(status_code=500, detail="Internal server error")
+    return {"json_execution": trace}

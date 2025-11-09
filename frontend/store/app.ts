@@ -1,6 +1,16 @@
 import { create } from "zustand";
 import axios from "axios";
 
+interface ExecutionStep {
+  step: number;
+  line: number;
+  type: string;
+  description: string;
+  value: string | null;
+  variables: Record<string, any>;
+  output: string;
+}
+
 interface AppState {
   pseudocode: string;
   cppCode: string;
@@ -19,6 +29,16 @@ interface AppState {
 
   isOcrLoading: boolean;
   ocrUploadImage: (file: File) => Promise<void>;
+
+  // Step-by-step execution
+  executionSteps: ExecutionStep[];
+  currentStepIndex: number;
+  isExecuting: boolean;
+  executeStepByStep: () => Promise<void>;
+  setCurrentStep: (index: number) => void;
+  nextStep: () => void;
+  prevStep: () => void;
+  resetExecution: () => void;
 }
 
 interface CorrectionResponse {
@@ -28,10 +48,14 @@ interface CorrectionResponse {
   explanation: string;
   remaining_calls?: number;
 }
+
 interface OCRResponse {
   extracted_text: string;
   remaining_calls?: number;
+}
 
+interface StepByStepResponse {
+  json_execution: string;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -86,7 +110,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         { code: pseudocode }
       );
       const data = res.data;
-      if (data.remaining_calls !== undefined){
+      if (data.remaining_calls !== undefined) {
         alert(`Fixes remaining this hour: ${data.remaining_calls}`);
       }
       if (data.has_errors) {
@@ -106,7 +130,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       // @ts-ignore
       if (err.response?.status === 429) {
         // @ts-ignore
-        alert(err.response.data.detail)
+        alert(err.response.data.detail);
       } else {
         alert("Error checking pseudocode.");
       }
@@ -135,7 +159,9 @@ export const useAppStore = create<AppState>((set, get) => ({
       set({ pseudocode: data.extracted_text });
 
       if (data.remaining_calls !== undefined) {
-        alert(`Image uploaded successfully!\nUploads remaining this hour: ${data.remaining_calls}`);
+        alert(
+          `Image uploaded successfully!\nUploads remaining this hour: ${data.remaining_calls}`
+        );
       }
 
       console.log("OCR result:", data);
@@ -146,4 +172,65 @@ export const useAppStore = create<AppState>((set, get) => ({
       set({ isOcrLoading: false });
     }
   },
+
+  // Step-by-step execution
+  executionSteps: [],
+  currentStepIndex: 0,
+  isExecuting: false,
+
+  executeStepByStep: async () => {
+    const { pseudocode } = get();
+
+    if (!pseudocode.trim()) {
+      alert("Please enter some pseudocode first!");
+      return;
+    }
+
+    set({ isExecuting: true });
+
+    try {
+      console.log("Sending pseudocode:", pseudocode);
+
+      const response = await axios.post<StepByStepResponse>(
+        "http://localhost:8000/sbs",
+        { pseudocode }
+      );
+
+      console.log("Response received:", response.data);
+
+      const steps: ExecutionStep[] = response.data.json_execution;
+      console.log("Parsed steps:", steps);
+
+      set({
+        executionSteps: steps,
+        currentStepIndex: 0,
+        isExecuting: false,
+      });
+    } catch (error: any) {
+      console.error("Step-by-step execution error:", error);
+      console.error("Error response:", error.response?.data);
+      console.error("Error status:", error.response?.status);
+
+      const errorMsg = error.response?.data?.detail || error.message || "Unknown error";
+      alert(`Error executing step-by-step:\n${errorMsg}\n\nCheck console for details.`);
+      set({ isExecuting: false });
+    }
+  },
+
+  setCurrentStep: (index) => set({ currentStepIndex: index }),
+
+  nextStep: () =>
+    set((state) => ({
+      currentStepIndex: Math.min(
+        state.currentStepIndex + 1,
+        state.executionSteps.length - 1
+      ),
+    })),
+
+  prevStep: () =>
+    set((state) => ({
+      currentStepIndex: Math.max(state.currentStepIndex - 1, 0),
+    })),
+
+  resetExecution: () => set({ executionSteps: [], currentStepIndex: 0 }),
 }));
