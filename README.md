@@ -1,5 +1,4 @@
 # pseudocronic
-AI-Powered Pseudocode Translator
 
 ## Sintaxa Pseudocod
 
