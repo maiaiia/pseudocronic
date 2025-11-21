@@ -1,6 +1,6 @@
 # PseudoCronic
 
-Back in high school, we **hated** learning pseudocode. Program after program, each one with 2-3 nested loops and the same tired conditions over and over, and everything written on paper. Hours wasted tracking every variable through every iteration, only to find out your mistake was writing 2+2=5 during the 4th iteration of the second while loop because you were too tired from the manual labor. Meanwhile, you're not even learning the actual logic behind the algorithm - the tediousness makes you miss the point entirely.
+Back in high school, we **hated** learning pseudocode. Program after program, each one with 2-3 nested loops and the same tired conditions over and over, and everything written on paper. Hours wasted tracking every variable through every iteration, only to find out your mistake was writing 2+2=5 during the 4th iteration of the second while loop because you were too tired from the manual labor. Meanwhile, you're not even learning the actual logic behind the algorithm, because the tediousness of the task makes you miss the point entirely.
 
 Well, we can’t really change the whole Romanian educational system. But we can do a little something to try and make it better.
 
