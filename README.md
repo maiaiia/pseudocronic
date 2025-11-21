@@ -19,7 +19,7 @@ PseudoCronic is a tool that makes learning and working with pseudocode actually 
 - Join Room for Real-Time Collaboration - Work on problems with your classmates 
 
 
-*API calls cost money, so the image extraction and error fixing features are rate-limited. Use them wisely! (think of it as encouraging you to learn rather than just spamming the “fix my code“ button)* 
+*API calls cost money, so the image extraction and error fixing features are rate-limited. Use them wisely! (the hourly rate should be enough, as long as you don't spam the fix my code button)* 
 
 ## How we built it
 
