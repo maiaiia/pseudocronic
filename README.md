@@ -34,7 +34,7 @@ We decided to perform the code translation **algorithmically**, inspired by the 
 We took advantage of how nice and well structured c++ is and only implemented a simple transpiler. Turns out going backwards is easier (but when you do it at 3am it actually isn’t)
 
 ### AI powered features
-- Extract text from a picture (tried to use an OCR but turns out out handwriting is too bad, so this one’s done by an LLM :( — we’re working on getting rid of the API calls in the future)
+- Extract text from a picture (tried to use an OCR but turns out our handwriting is too bad, so this one’s done by an LLM :( — we’re working on getting rid of the API calls in the future)
 - Highlight syntax errors and fix them
 -  Generate practice problems
 
